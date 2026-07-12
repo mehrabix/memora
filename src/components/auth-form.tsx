@@ -82,7 +82,7 @@ export function LoginForm() {
             />
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4">
+        <CardFooter className="flex flex-col gap-4 pt-6">
           <SubmitButton label="Log in" />
           <p className="text-sm text-muted-foreground">
             No account?{" "}
@@ -145,7 +145,7 @@ export function RegisterForm() {
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4">
+        <CardFooter className="flex flex-col gap-4 pt-6">
           <SubmitButton label="Create account" />
           <p className="text-sm text-muted-foreground">
             Already have an account?{" "}
