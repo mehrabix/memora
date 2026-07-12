@@ -277,12 +277,12 @@ memora/
 - [x] Loading states + error boundaries
 
 ### Phase 5 — Testing & Deploy (Day 6)
-- [ ] Unit tests for SM-2 algorithm
-- [ ] Unit tests for MultiProviderRouter
-- [ ] Component tests (Vitest + Testing Library)
-- [ ] E2E tests (Playwright) — auth flow, deck creation, study flow
-- [ ] Deploy to Vercel (free tier)
-- [ ] Configure Turso for production DB (optional)
+- [x] Unit tests for SM-2 algorithm
+- [x] Unit tests for MultiProviderRouter
+- [x] Component tests (Vitest + Testing Library)
+- [x] E2E tests (Playwright) — auth flow, deck creation, study flow
+- [x] Deploy to Vercel (free tier)
+- [x] Configure Turso for production DB (optional)
 
 ---
 
