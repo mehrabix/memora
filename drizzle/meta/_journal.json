@@ -8,6 +8,13 @@
       "when": 1783871956634,
       "tag": "0000_curly_prowler",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1783876339228,
+      "tag": "0001_salty_gamma_corps",
+      "breakpoints": true
     }
   ]
 }

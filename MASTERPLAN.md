@@ -242,14 +242,14 @@ memora/
 ## Implementation Phases
 
 ### Phase 1 — Foundation (Day 1)
-- [ ] Configure Drizzle ORM + SQLite
-- [ ] Define database schema (users, decks, cards, reviews, sessions)
-- [ ] Write migration + seed script
-- [ ] Set up NextAuth.js v5 (credentials + OAuth)
-- [ ] Create auth pages (login, register)
-- [ ] Set up shadcn/ui components (button, card, input, dialog)
-- [ ] Create root layout with nav bar + auth state
-- [ ] Create landing page
+- [x] Configure Drizzle ORM + SQLite
+- [x] Define database schema (users, decks, cards, reviews, sessions)
+- [x] Write migration + seed script
+- [x] Set up NextAuth.js v5 (credentials + OAuth)
+- [x] Create auth pages (login, register)
+- [x] Set up shadcn/ui components (button, card, input, dialog)
+- [x] Create root layout with nav bar + auth state
+- [x] Create landing page
 
 ### Phase 2 — AI Layer (Day 2)
 - [x] Build `MultiProviderRouter` — same failover pattern as Synthara
@@ -259,22 +259,22 @@ memora/
 - [x] Build AI input form (topic input, paste content; URL ingestion pending)
 
 ### Phase 3 — Core Features (Days 3-4)
-- [ ] Deck CRUD (create, list, edit, delete)
-- [ ] Card CRUD (add, edit, delete cards within a deck)
-- [ ] Flashcard study interface with flip animation
-- [ ] Implement SM-2 spaced repetition algorithm
-- [ ] Rating buttons (Again/Hard/Good/Easy) on each card
-- [ ] Auto-schedule next review based on SM-2
-- [ ] Quiz mode — AI generates MCQ/fill-blank from deck content
-- [ ] Score and review quiz results
+- [x] Deck CRUD (create, list, edit, delete)
+- [x] Card CRUD (add, edit, delete cards within a deck)
+- [x] Flashcard study interface with flip animation
+- [x] Implement SM-2 spaced repetition algorithm
+- [x] Rating buttons (Again/Hard/Good/Easy) on each card
+- [x] Auto-schedule next review based on SM-2
+- [x] Quiz mode — AI generates MCQ/fill-blank from deck content
+- [x] Score and review quiz results
 
 ### Phase 4 — Dashboard & Polish (Day 5)
-- [ ] Dashboard — due cards count, streak, study stats
-- [ ] Study session tracking (time, cards studied)
-- [ ] Progress charts (cards learned over time)
-- [ ] Settings page — API key management, theme toggle
-- [ ] Responsive design (mobile-friendly)
-- [ ] Loading states + error boundaries
+- [x] Dashboard — due cards count, streak, study stats
+- [x] Study session tracking (time, cards studied)
+- [x] Progress charts (cards learned over time)
+- [x] Settings page — API key management, theme toggle
+- [x] Responsive design (mobile-friendly)
+- [x] Loading states + error boundaries
 
 ### Phase 5 — Testing & Deploy (Day 6)
 - [ ] Unit tests for SM-2 algorithm

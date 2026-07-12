@@ -15,6 +15,7 @@ export const users = sqliteTable("users", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
+  apiKey: text("api_key"), // optional user-supplied OpenRouter key
   createdAt: text("created_at")
     .notNull()
     .$defaultFn(() => new Date().toISOString()),

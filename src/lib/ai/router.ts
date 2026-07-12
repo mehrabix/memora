@@ -68,11 +68,13 @@ type Candidate = {
   model: ReturnType<ReturnType<typeof createOpenAI>>;
 };
 
+const USER_KEY_MODEL = "meta-llama/llama-3.3-70b-instruct:free";
+
 export class MultiProviderRouter {
   private candidatesCache: Candidate[] | null = null;
 
-  /** Build the ordered list of available { provider, model } candidates. */
-  private candidates(): Candidate[] {
+  /** Build the ordered list of env-configured { provider, model } candidates. */
+  private envCandidates(): Candidate[] {
     if (this.candidatesCache) return this.candidatesCache;
 
     const list: Candidate[] = [];
@@ -91,9 +93,28 @@ export class MultiProviderRouter {
     return list;
   }
 
+  /** A leading candidate built from a user-supplied OpenRouter key. */
+  private userCandidate(apiKey: string): Candidate {
+    const factory = createOpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey,
+    });
+    return {
+      provider: "Your Key (OpenRouter)",
+      model: factory(USER_KEY_MODEL),
+    };
+  }
+
   /** Names of providers that have a configured key (for diagnostics/UI). */
   configuredProviders(): string[] {
     return PROVIDERS.filter((p) => process.env[p.apiKeyEnv]).map((p) => p.name);
+  }
+
+  /** Resolve the candidate list, optionally prepending a user-supplied key. */
+  private resolve(apiKey?: string): Candidate[] {
+    const base = this.envCandidates();
+    if (apiKey && apiKey.trim()) return [this.userCandidate(apiKey.trim()), ...base];
+    return base;
   }
 
   /** Non-streaming generation with failover across all candidates. */
@@ -102,8 +123,9 @@ export class MultiProviderRouter {
     prompt: string;
     temperature?: number;
     maxTokens?: number;
+    apiKey?: string;
   }): Promise<string> {
-    const candidates = this.candidates();
+    const candidates = this.resolve(opts.apiKey);
     if (candidates.length === 0) {
       throw new Error(
         "No AI provider configured. Set at least one API key (e.g. OPENROUTER_API_KEY)."
@@ -135,8 +157,12 @@ export class MultiProviderRouter {
   }
 
   /** Streaming chat with failover: peeks the first chunk before committing. */
-  stream(opts: { system: string; messages: ModelMessage[] }): Response {
-    const candidates = this.candidates();
+  stream(opts: {
+    system: string;
+    messages: ModelMessage[];
+    apiKey?: string;
+  }): Response {
+    const candidates = this.resolve(opts.apiKey);
     if (candidates.length === 0) {
       return new Response(
         "No AI provider configured. Set at least one API key (e.g. OPENROUTER_API_KEY).",

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { router } from "@/src/lib/ai/router";
+import { db } from "@/src/lib/db";
+import { users } from "@/src/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { auth } from "@/src/lib/auth";
 import {
   flashcardsSchema,
   quizSchema,
@@ -14,6 +18,17 @@ import {
 } from "@/src/lib/ai/prompts";
 
 export const runtime = "nodejs";
+
+/** Returns the signed-in user's own OpenRouter key, if they set one. */
+async function userApiKey(): Promise<string | undefined> {
+  const session = await auth();
+  if (!session?.user?.id) return undefined;
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, session.user.id),
+    columns: { apiKey: true },
+  });
+  return user?.apiKey ?? undefined;
+}
 
 function extractJson(text: string): unknown {
   let t = text.trim();
@@ -72,7 +87,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const text = await router.generate({ system, prompt });
+    const text = await router.generate({
+      system,
+      prompt,
+      apiKey: await userApiKey(),
+    });
     const json = extractJson(text);
     const parsed = schema.parse(json);
     return NextResponse.json(parsed);

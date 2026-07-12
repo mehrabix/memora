@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/src/components/ui/card";
 import { Progress } from "@/src/components/ui/progress";
 import { RATINGS } from "@/src/lib/sm2";
 import { reviewCardAction } from "@/src/lib/actions/review";
+import { recordStudySessionAction } from "@/src/lib/actions/sessions";
 
 type CardItem = {
   id: string;
@@ -22,6 +23,11 @@ export function FlashcardStudy({ deckId, cards }: { deckId: string; cards: CardI
   const [done, setDone] = React.useState(0);
   const [finished, setFinished] = React.useState(cards.length === 0);
   const [busy, setBusy] = React.useState(false);
+  const startRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    startRef.current = Date.now();
+  }, []);
 
   const current = cards[index];
 
@@ -34,6 +40,10 @@ export function FlashcardStudy({ deckId, cards }: { deckId: string; cards: CardI
     const next = index + 1;
     if (next >= cards.length) {
       setFinished(true);
+      const start = startRef.current ?? 0;
+      // eslint-disable-next-line react-hooks/purity
+      const duration = Math.max(1, Math.round((Date.now() - start) / 1000));
+      void recordStudySessionAction(deckId, cards.length, duration);
     } else {
       setIndex(next);
       setDone(next);

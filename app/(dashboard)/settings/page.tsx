@@ -1,5 +1,10 @@
 import { ThemeToggle } from "@/src/components/theme-toggle";
+import { ApiKeyForm } from "@/src/components/api-key-form";
 import { router } from "@/src/lib/ai/router";
+import { auth } from "@/src/lib/auth";
+import { db } from "@/src/lib/db";
+import { users } from "@/src/lib/db/schema";
+import { eq } from "drizzle-orm";
 import { Badge } from "@/src/components/ui/badge";
 import {
   Card,
@@ -9,8 +14,25 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 
-export default function SettingsPage() {
+function maskKey(key: string | null): string | null {
+  if (!key) return null;
+  const tail = key.slice(-4);
+  return `sk-or-…${tail}`;
+}
+
+export default async function SettingsPage() {
+  const session = await auth();
+  const userId = session?.user?.id;
+  const user = userId
+    ? await db.query.users.findFirst({
+        where: eq(users.id, userId),
+        columns: { apiKey: true },
+      })
+    : undefined;
+  const hasKey = !!user?.apiKey;
+  const masked = maskKey(user?.apiKey ?? null);
   const providers = router.configuredProviders();
+
   return (
     <div className="max-w-2xl space-y-6">
       <div>
@@ -33,17 +55,32 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">AI Providers</CardTitle>
+          <CardTitle className="text-base">Your AI Key</CardTitle>
           <CardDescription>
-            Memora fails over across configured free providers. Set any provider
-            key in your environment to enable AI generation.
+            Provide your own OpenRouter key to generate with your quota.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {hasKey && (
+            <p className="text-sm text-muted-foreground">
+              Active key: <code className="text-xs">{masked}</code>
+            </p>
+          )}
+          <ApiKeyForm hasKey={hasKey} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Server AI Providers</CardTitle>
+          <CardDescription>
+            Memora also fails over across these server-configured free providers.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {providers.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              No provider configured. Set <code className="text-xs">OPENROUTER_API_KEY</code>{" "}
-              (or another key) to start generating flashcards.
+              No provider configured on the server.
             </p>
           ) : (
             <div className="flex flex-wrap gap-2">
