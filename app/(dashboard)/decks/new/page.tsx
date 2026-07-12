@@ -1,6 +1,13 @@
-import { Sparkles } from "lucide-react";
+import { Sparkles, PenLine } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { AiDeckForm } from "@/src/components/ai-deck-form";
 import { NewDeckForm } from "@/src/components/new-deck-form";
-import { Badge } from "@/src/components/ui/badge";
 
 export default function NewDeckPage() {
   return (
@@ -8,19 +15,35 @@ export default function NewDeckPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Create a deck</h1>
         <p className="text-muted-foreground">
-          Build a deck manually or let AI generate the cards.
+          Let AI generate the cards, or build a deck by hand.
         </p>
       </div>
-      <NewDeckForm />
-      <div className="flex items-center gap-2 rounded-lg border border-dashed bg-muted/30 p-4 text-sm text-muted-foreground">
-        <Sparkles className="size-4 text-primary" />
-        <span>
-          <Badge variant="secondary" className="mr-1">
-            Coming soon
-          </Badge>
-          AI generation (topic, paste, or URL) is part of the next phase.
-        </span>
-      </div>
+
+      <Card className="border-primary/40 bg-primary/5">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Sparkles className="size-5 text-primary" /> Generate with AI
+          </CardTitle>
+          <CardDescription>
+            Enter a topic or paste notes — Memora&apos;s AI writes the flashcards.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AiDeckForm />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <PenLine className="size-5" /> Build manually
+          </CardTitle>
+          <CardDescription>Start an empty deck and add cards yourself.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <NewDeckForm />
+        </CardContent>
+      </Card>
     </div>
   );
 }

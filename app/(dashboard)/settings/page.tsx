@@ -1,4 +1,6 @@
 import { ThemeToggle } from "@/src/components/theme-toggle";
+import { router } from "@/src/lib/ai/router";
+import { Badge } from "@/src/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -8,6 +10,7 @@ import {
 } from "@/src/components/ui/card";
 
 export default function SettingsPage() {
+  const providers = router.configuredProviders();
   return (
     <div className="max-w-2xl space-y-6">
       <div>
@@ -30,12 +33,28 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">AI Provider</CardTitle>
+          <CardTitle className="text-base">AI Providers</CardTitle>
           <CardDescription>
-            Set <code className="text-xs">OPENROUTER_API_KEY</code> (or another free
-            provider key) in your environment to enable AI generation.
+            Memora fails over across configured free providers. Set any provider
+            key in your environment to enable AI generation.
           </CardDescription>
         </CardHeader>
+        <CardContent>
+          {providers.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No provider configured. Set <code className="text-xs">OPENROUTER_API_KEY</code>{" "}
+              (or another key) to start generating flashcards.
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {providers.map((p) => (
+                <Badge key={p} variant="secondary">
+                  {p}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </CardContent>
       </Card>
     </div>
   );

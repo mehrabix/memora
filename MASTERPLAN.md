@@ -252,11 +252,11 @@ memora/
 - [ ] Create landing page
 
 ### Phase 2 — AI Layer (Day 2)
-- [ ] Build `MultiProviderRouter` — same failover pattern as Synthara
-- [ ] Create AI streaming endpoint (`/api/chat`) using Vercel AI SDK
-- [ ] Create generation endpoint (`/api/generate`) for flashcards/quiz/summary
-- [ ] Write prompt templates for each generation type
-- [ ] Build AI input form (topic input, paste content, URL)
+- [x] Build `MultiProviderRouter` — same failover pattern as Synthara
+- [x] Create AI streaming endpoint (`/api/chat`) using Vercel AI SDK
+- [x] Create generation endpoint (`/api/generate`) for flashcards/quiz/summary
+- [x] Write prompt templates for each generation type
+- [x] Build AI input form (topic input, paste content; URL ingestion pending)
 
 ### Phase 3 — Core Features (Days 3-4)
 - [ ] Deck CRUD (create, list, edit, delete)
