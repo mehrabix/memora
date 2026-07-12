@@ -75,3 +75,49 @@ export async function deleteCardAction(cardId: string, deckId: string) {
   revalidatePath("/decks");
   revalidatePath("/dashboard");
 }
+
+const updateCardSchema = z.object({
+  front: z.string().min(1, "Front is required").max(1000),
+  back: z.string().min(1, "Back is required").max(2000),
+  hint: z.string().max(500).optional(),
+  tags: z.string().max(500).optional(),
+});
+
+export async function updateCardAction(
+  cardId: string,
+  deckId: string,
+  formData: FormData
+) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/auth/login");
+
+  const deck = await db.query.decks.findFirst({
+    where: eq(decks.id, deckId),
+    columns: { userId: true },
+  });
+  if (!deck || deck.userId !== session.user.id) redirect("/auth/login");
+
+  const parsed = updateCardSchema.safeParse({
+    front: formData.get("front"),
+    back: formData.get("back"),
+    hint: formData.get("hint") || undefined,
+    tags: formData.get("tags") || undefined,
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid card" };
+  }
+
+  await db
+    .update(cards)
+    .set({
+      front: parsed.data.front,
+      back: parsed.data.back,
+      hint: parsed.data.hint ?? null,
+      tags: parsed.data.tags ?? null,
+    })
+    .where(eq(cards.id, cardId));
+
+  revalidatePath(`/decks/${deckId}/edit`);
+  revalidatePath(`/decks/${deckId}`);
+  return { error: undefined };
+}

@@ -1,7 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { db } from "@/src/lib/db";
 import { decks, cards } from "@/src/lib/db/schema";
@@ -101,5 +103,60 @@ export async function createDeckWithCards(input: GeneratedDeckInput) {
   );
 
   redirect(`/decks/${deckId}/edit`);
+}
+
+export async function deleteDeckAction(deckId: string) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/auth/login");
+
+  const deck = await db.query.decks.findFirst({
+    where: eq(decks.id, deckId),
+    columns: { userId: true },
+  });
+  if (!deck || deck.userId !== session.user.id) redirect("/auth/login");
+
+  await db.delete(decks).where(eq(decks.id, deckId));
+
+  revalidatePath("/decks");
+  revalidatePath("/dashboard");
+}
+
+const editDeckSchema = z.object({
+  title: z.string().min(1, "Title is required").max(120),
+  description: z.string().max(500).optional(),
+});
+
+export async function updateDeckAction(deckId: string, formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/auth/login");
+
+  const deck = await db.query.decks.findFirst({
+    where: eq(decks.id, deckId),
+    columns: { userId: true },
+  });
+  if (!deck || deck.userId !== session.user.id) redirect("/auth/login");
+
+  const parsed = editDeckSchema.safeParse({
+    title: formData.get("title"),
+    description: formData.get("description") || undefined,
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  await db
+    .update(decks)
+    .set({
+      title: parsed.data.title,
+      description: parsed.data.description ?? null,
+      updatedAt: new Date().toISOString(),
+    })
+    .where(eq(decks.id, deckId));
+
+  revalidatePath(`/decks/${deckId}`);
+  revalidatePath(`/decks/${deckId}/edit`);
+  revalidatePath("/decks");
+  revalidatePath("/dashboard");
+  return { ok: true as const };
 }
 

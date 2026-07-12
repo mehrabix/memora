@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, HelpCircle } from "lucide-react";
 import { auth } from "@/src/lib/auth";
 import { db } from "@/src/lib/db";
 import { decks, cards } from "@/src/lib/db/schema";
@@ -50,6 +50,13 @@ export default async function StudyDeckPage({
         <Button asChild variant="outline" size="sm">
           <Link href={`/decks/${id}/edit`}>Edit</Link>
         </Button>
+        {allCards.length > 1 && (
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/quiz/${id}`}>
+              <HelpCircle className="size-4" /> Quiz
+            </Link>
+          </Button>
+        )}
       </div>
 
       {studyCards.length === 0 ? (

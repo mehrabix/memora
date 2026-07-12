@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Trash2, Play } from "lucide-react";
+import { Trash2, Play, HelpCircle } from "lucide-react";
 import { auth } from "@/src/lib/auth";
 import { db } from "@/src/lib/db";
 import { decks, cards } from "@/src/lib/db/schema";
@@ -14,6 +14,9 @@ import {
 } from "@/src/components/ui/card";
 import { AddCardForm } from "@/src/components/add-card-form";
 import { deleteCardAction } from "@/src/lib/actions/cards";
+import { DeleteDeckButton } from "@/src/components/delete-deck-button";
+import { EditDeckDialog } from "@/src/components/edit-deck-dialog";
+import { EditCardDialog } from "@/src/components/edit-card-dialog";
 
 export default async function EditDeckPage({
   params,
@@ -49,13 +52,28 @@ export default async function EditDeckPage({
             <p className="text-muted-foreground">{deck.description}</p>
           )}
         </div>
-        {deckCards.length > 0 && (
-          <Button asChild>
-            <Link href={`/decks/${id}`}>
-              <Play className="size-4" /> Study
-            </Link>
-          </Button>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {deckCards.length > 0 && (
+            <Button asChild>
+              <Link href={`/decks/${id}`}>
+                <Play className="size-4" /> Study
+              </Link>
+            </Button>
+          )}
+          {deckCards.length > 1 && (
+            <Button asChild variant="outline">
+              <Link href={`/quiz/${id}`}>
+                <HelpCircle className="size-4" /> Quiz
+              </Link>
+            </Button>
+          )}
+          <EditDeckDialog
+            deckId={id}
+            title={deck.title}
+            description={deck.description}
+          />
+          <DeleteDeckButton deckId={id} deckTitle={deck.title} />
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -91,17 +109,27 @@ export default async function EditDeckPage({
                       {c.back}
                     </p>
                   </div>
-                  <form action={deleteCardAction.bind(null, c.id, id)}>
-                    <Button
-                      type="submit"
-                      variant="ghost"
-                      size="icon"
-                      className="text-muted-foreground hover:text-destructive"
-                      aria-label="Delete card"
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </form>
+                  <div className="flex shrink-0 items-center">
+                    <EditCardDialog
+                      cardId={c.id}
+                      deckId={id}
+                      front={c.front}
+                      back={c.back}
+                      hint={c.hint}
+                      tags={c.tags}
+                    />
+                    <form action={deleteCardAction.bind(null, c.id, id)}>
+                      <Button
+                        type="submit"
+                        variant="ghost"
+                        size="icon"
+                        className="text-muted-foreground hover:text-destructive"
+                        aria-label="Delete card"
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </form>
+                  </div>
                 </div>
               ))
             )}

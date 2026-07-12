@@ -7,6 +7,7 @@ import { decks, cards } from "@/src/lib/db/schema";
 import { eq, and, lte, sql } from "drizzle-orm";
 import { Button } from "@/src/components/ui/button";
 import { DeckCard } from "@/src/components/deck-card";
+import { DeleteDeckButton } from "@/src/components/delete-deck-button";
 
 export default async function DecksPage() {
   const session = await auth();
@@ -63,6 +64,7 @@ export default async function DecksPage() {
               description={d.description}
               cardCount={d.cardCount}
               dueCount={dueMap.get(d.id) ?? 0}
+              action={<DeleteDeckButton deckId={d.id} deckTitle={d.title} />}
             />
           ))}
         </div>
